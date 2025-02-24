@@ -1,0 +1,227 @@
+﻿<mah:MetroWindow
+    x:Class="Motion.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:Motion"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:systemstate="clr-namespace:Motion.Config"
+    xmlns:view="clr-namespace:Motion.View"
+    xmlns:viewmodel="clr-namespace:Motion.ViewModel"
+    Title="{Binding Title}"
+    d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
+    d:DesignHeight="800"
+    d:DesignWidth="1200"
+    mah:DialogParticipation.Register="{Binding}"
+    Closing="MetroWindow_Closing"
+    NonActiveGlowColor="#CDFF0000"
+    ResizeMode="CanResizeWithGrip"
+    ShowIconOnTitleBar="True"
+    WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
+    mc:Ignorable="d"
+    >
+    <Window.Resources>
+        <systemstate:SystemState x:Key="SystemState" />
+        <Style x:Key="RoundedTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8"
+                            >
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--  定义通用的 TextBox 样式属性  -->
+        <Style
+            x:Key="CommonTextBoxStyle"
+            BasedOn="{StaticResource RoundedTextBoxStyle}"
+            TargetType="TextBox"
+            >
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="5" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <!--  定义通用的 Label 样式属性  -->
+        <Style x:Key="CommonLabelStyle" TargetType="Label">
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <!--  定义通用的 Button 样式属性  -->
+        <Style x:Key="CommonButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="70" />
+            <Setter Property="Margin" Value="5" />
+        </Style>
+    </Window.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <!--  侧边栏  -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80" />
+            <RowDefinition />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid Grid.ColumnSpan="2" ShowGridLines="False">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Label
+                    Width="300"
+                    VerticalContentAlignment="Center"
+                    Content="{Binding Title}"
+                    FontSize="30"
+                    />
+                <!--  系统时间  -->
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="系统时间:" Style="{StaticResource CommonLabelStyle}" />
+                    <TextBox
+                        Width="150"
+                        Style="{StaticResource CommonTextBoxStyle}"
+                        Text="{Binding NowTime, Source={StaticResource SystemState}}"
+                        />
+                </StackPanel>
+                <!--  当前用户  -->
+                <StackPanel
+                    Margin="20,0,0,0"
+                    IsEnabled="False"
+                    Orientation="Horizontal"
+                    >
+                    <Label Content="当前用户:" Style="{StaticResource CommonLabelStyle}" />
+                    <TextBox
+                        Width="150"
+                        Style="{StaticResource CommonTextBoxStyle}"
+                        Text="{Binding NowUser, Source={StaticResource SystemState}}"
+                        />
+                </StackPanel>
+                <!--  运行状态  -->
+                <StackPanel Margin="20,0,0,0" Orientation="Horizontal">
+                    <Label Content="运行状态:" Style="{StaticResource CommonLabelStyle}" />
+                    <TextBox
+                        Width="150"
+                        Style="{StaticResource CommonTextBoxStyle}"
+                        Text="{Binding NowRunState, Source={StaticResource SystemState}}"
+                        />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel
+                Grid.Column="1"
+                Margin="30,0,0,0"
+                Orientation="Horizontal"
+                >
+                <Button
+                    Width="70"
+                    Background="Green"
+                    Content="启动"
+                    Style="{StaticResource CommonButtonStyle}"
+                    />
+                <Button
+                    Width="70"
+                    Background="Orange"
+                    Content="复位"
+                    Style="{StaticResource CommonButtonStyle}"
+                    >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                            <i:InvokeCommandAction Command="{Binding ButtonPressedCommand}" />
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                            <i:InvokeCommandAction Command="{Binding ButtonReleasedCommand}" />
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="Click">
+                            <i:InvokeCommandAction Command="{Binding ResetErrorCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button
+                    Width="70"
+                    Background="Red"
+                    Content="停止"
+                    Style="{StaticResource CommonButtonStyle}"
+                    />
+            </StackPanel>
+        </Grid>
+        <Border
+            Grid.Row="1"
+            Grid.Column="0"
+            BorderThickness="0"
+            >
+            <ItemsControl
+                Grid.Row="1"
+                Grid.RowSpan="2"
+                BorderThickness="0,0,0,0"
+                ItemsSource="{Binding Modules}"
+                >
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button
+                            Height="40"
+                            Margin="5"
+                            BorderThickness="0"
+                            Command="{Binding DataContext.OpenCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                            Content="{Binding Name}"
+                            FontSize="15"
+                            />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        <!--  主内容区域  -->
+        <ContentControl
+            Grid.Row="1"
+            Grid.Column="1"
+            Content="{Binding CurrentPage}"
+            />
+        <StatusBar Grid.Row="2" Grid.ColumnSpan="3">
+            <StatusBarItem>
+                <TextBlock
+                    Width="120"
+                    Text="{Binding CpuUsage, StringFormat='CPU 使用率:{0}%'}"
+                    TextAlignment="Center"
+                    />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock
+                    Width="120"
+                    Text="{Binding TitleSelectName, StringFormat='当前页面:{0}'}"
+                    TextAlignment="Center"
+                    />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock
+                    Width="200"
+                    Text="{Binding RunTime}"
+                    TextAlignment="Center"
+                    />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</mah:MetroWindow>

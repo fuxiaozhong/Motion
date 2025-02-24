@@ -1,0 +1,131 @@
+﻿<UserControl
+    x:Class="Motion.View.LogView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converter="clr-namespace:Motion.Converter"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:Motion.ViewModel"
+    xmlns:loghelper="clr-namespace:Motion.Core"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:systemstate="clr-namespace:Motion.Config"
+    d:DataContext="{d:DesignInstance local:LogViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mah:DialogParticipation.Register="{Binding}"
+    mc:Ignorable="d"
+    >
+    <UserControl.Resources>
+        <systemstate:SystemState x:Key="SystemState" />
+        <loghelper:LogHelper x:Key="log" />
+        <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Label
+            Grid.ColumnSpan="2"
+            Padding="10,0,0,0"
+            VerticalContentAlignment="Center"
+            BorderBrush="Gray"
+            BorderThickness="0,0,0,1"
+            Content="日志页面"
+            FontSize="14"
+            FontWeight="Bold"
+            />
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <mah:Tile
+                Title="正常"
+                Grid.Row="1"
+                Width="120"
+                Height="100"
+                Background="Green"
+                Click="Tile_Click"
+                Count="{Binding InfoNum, Source={StaticResource log}}"
+                CountFontSize="42"
+                HorizontalTitleAlignment="Center"
+                TitleFontSize="14"
+                VerticalTitleAlignment="Top"
+                />
+            <mah:Tile
+                Title="警告"
+                Grid.Row="1"
+                Width="120"
+                Height="100"
+                Background="#FF842D"
+                Click="Tile_Click_1"
+                Count="{Binding WarningNum, Source={StaticResource log}}"
+                CountFontSize="42"
+                HorizontalTitleAlignment="Center"
+                TitleFontSize="14"
+                VerticalTitleAlignment="Top"
+                />
+            <mah:Tile
+                Title="错误"
+                Grid.Row="1"
+                Width="120"
+                Height="100"
+                Background="Red"
+                Click="Tile_Click_2"
+                Count="{Binding ErrorNum, Source={StaticResource log}}"
+                CountFontSize="42"
+                HorizontalTitleAlignment="Center"
+                TitleFontSize="14"
+                VerticalTitleAlignment="Top"
+                />
+            <mah:Tile
+                Title="全部"
+                Grid.Row="1"
+                Width="120"
+                Height="100"
+                Background="#FF0078D7"
+                Click="Tile_Click_3"
+                Count="{Binding AllNum, Source={StaticResource log}}"
+                CountFontSize="42"
+                HorizontalTitleAlignment="Center"
+                TitleFontSize="14"
+                VerticalTitleAlignment="Top"
+                />
+        </StackPanel>
+        <ListView
+            Grid.Row="1"
+            Grid.Column="1"
+            FontSize="16"
+            ItemsSource="{Binding Logs, Source={StaticResource log}}"
+            >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn
+                        Width="220"
+                        DisplayMemberBinding="{Binding Time}"
+                        Header="时间"
+                        />
+                    <GridViewColumn
+                        Width="100"
+                        DisplayMemberBinding="{Binding Type}"
+                        Header="类型"
+                        />
+                    <GridViewColumn
+                        Width="1200"
+                        DisplayMemberBinding="{Binding Message}"
+                        Header="信息"
+                        />
+                </GridView>
+            </ListView.View>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Setter Property="Foreground" Value="{Binding Foreground}" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+    </Grid>
+</UserControl>
